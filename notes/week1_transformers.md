@@ -1,38 +1,40 @@
-# \# Week 1 — Transformers Notes
+# Week 1 — Transformers Notes
 
-# 
+## 10 bullets (self-attention + multi-head + Q/K/V)
 
-# \## 10 bullets
+1. **Self-attention** lets each token mix information from other tokens to build a context-aware representation.
+2. For each token embedding \(x_i\), we compute **Query, Key, Value** via linear projections:
+   \[
+   q_i = x_i W_Q,\quad k_i = x_i W_K,\quad v_i = x_i W_V
+   \]
+3. The **attention score** from token \(i\) to token \(j\) is typically a dot product:
+   \[
+   s_{ij} = q_i^\top k_j
+   \]
+4. We apply **scaled dot-product attention** to keep scores stable when dimensions grow:
+   \[
+   s_{ij} = \frac{q_i^\top k_j}{\sqrt{d_k}}
+   \]
+5. We convert scores into weights with **softmax** (weights sum to 1 over \(j\)):
+   \[
+   \alpha_{ij} = \mathrm{softmax}(s_{ij})
+   \]
+6. The output representation for token \(i\) is a **weighted sum of values**:
+   \[
+   o_i = \sum_j \alpha_{ij} v_j
+   \]
+7. **Query (Q)** represents what token \(i\) is “looking for” in other tokens.
+8. **Key (K)** represents what token \(j\) “offers”; it’s what queries match against.
+9. **Value (V)** is the actual information that gets aggregated when token \(j\) is attended to.
+10. **Multi-head attention** runs attention multiple times in parallel with different projections so each head can capture different relationships:
+   \[
+   \text{head}_h = \mathrm{Attention}(XW_Q^h,\; XW_K^h,\; XW_V^h)
+   \]
+   and then combines them:
+   \[
+   \mathrm{MHA}(X) = \mathrm{Concat}(\text{head}_1,\ldots,\text{head}_H) W_O
+   \]
 
-# 
-
-# 1\. \*\*Self-attention\*\* lets each token look at other tokens in the same sequence to build a context-aware representation of itself.
-
-# 2\. In self-attention, each token produces three vectors: \*\*Query (Q)\*\*, \*\*Key (K)\*\*, and \*\*Value (V)\*\* by linear projections of its embedding.
-
-# 3\. The \*\*attention score\*\* between token \*i\* and token \*j\* is computed by a similarity function, typically the dot product: `Q\_i · K\_j`.
-
-# 4\. Scores are scaled by `1/sqrt(d\_k)` to keep values numerically stable before applying softmax.
-
-# 5\. \*\*Softmax\*\* turns scores into weights that sum to 1, so we get a weighted average of values.
-
-# 6\. The output for token \*i\* is the weighted sum of \*\*V\*\* vectors from all tokens: it “mixes” information from other tokens into token \*i\*.
-
-# 7\. \*\*Q (Query)\*\* represents what this token is looking for; it encodes the current token’s “question.”
-
-# 8\. \*\*K (Key)\*\* represents what each token offers; it’s used to match against queries.
-
-# 9\. \*\*V (Value)\*\* is the information actually passed along once a token is attended to.
-
-# 10\. \*\*Multi-head attention\*\* runs several attention mechanisms in parallel so the model can learn different kinds of relationships at once (e.g., syntax, coreference, topic), then concatenates and mixes them.
-
-# 
-
-# \## Quick intuition
-
-# \- Attention = "which tokens matter for this token right now?"
-
-# \- Multi-head = "learn multiple views of relevance at the same time."
-
-
-
+## Quick intuition (in plain language)
+- Attention answers: “Which other tokens matter for this token right now?”
+- Multi-head attention means: “Look for multiple kinds of relationships at once.”
